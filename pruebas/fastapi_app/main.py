@@ -44,7 +44,7 @@ async def read_user(email: str, db: Session = Depends(get_db)):
 @app.post("/usuarios/", tags = ["usuarios"], status_code=status.HTTP_202_ACCEPTED)
 async def create_user(user: schemas.UserBase, db: Session = Depends(get_db)):
     if crud.insert_row_Usuarios(db=db, user_base=user) is True:
-        return {"message": "Usuario agregado"}
+        return {"message": "Usuario agregado correctamente"}
     else:
         raise HTTPException(status_code=400, detail="Correo ya registrado")
 
