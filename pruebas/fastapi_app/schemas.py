@@ -26,3 +26,12 @@ class CicloEscolarBase(BaseModel):
     registro_horarios_secretaria_termino : date
     registro_aprobacion_coordi_docente_inicio : date
     registro_aprobacion_coordi_docente_termino : date
+
+
+class PlanEstudiosBase(BaseModel):
+    id_materia : Optional[int]
+    nombre_materia : str
+    cuatrimestre : int
+    total_horas : int
+    total_horas_semana : int
+    carrera : int

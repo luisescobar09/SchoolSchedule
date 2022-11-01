@@ -28,3 +28,13 @@ class CicloEscolar(Base):
     registro_horarios_secretaria_termino = Column(Date(), nullable = False)
     registro_aprobacion_coordi_docente_inicio = Column(Date(), nullable = False)
     registro_aprobacion_coordi_docente_termino = Column(Date(), nullable = False)
+
+class PlanEstudios(Base):
+    __tablename__ = 'plan_estudios'
+
+    id_materia = Column(Integer(), primary_key = True)
+    nombre_materia = Column(String(60), nullable = False)
+    cuatrimestre = Column(SmallInteger(), nullable = False)
+    total_horas = Column(SmallInteger(), nullable = False)
+    total_horas_semana = Column(SmallInteger(), nullable = False)
+    carrera = Column(SmallInteger(), nullable = False)
