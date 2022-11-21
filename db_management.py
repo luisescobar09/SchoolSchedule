@@ -69,6 +69,11 @@ class Grupo(Base):
     ciclo_escolar = Column(Integer(), ForeignKey("ciclo_escolar.id_ciclo_escolar", ondelete="CASCADE"), nullable = False) # FOREIGN KEY CiCLOESCOLAR(ID)
     carrera = Column(SmallInteger(), ForeignKey("carreras.id_carrera", ondelete="CASCADE"), nullable = False) ### FOREIGN KEY CARRERAS(ID)
 
+
+'''class DisponibilidadDocentes(Base):
+    __tablename__ = 'disponibilidad_docentes'
+    id'''
+    
 Session = sessionmaker(engine)
 session = Session()
 

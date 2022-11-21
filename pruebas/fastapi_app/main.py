@@ -94,9 +94,18 @@ async def create_carrera(carrera: schemas.CarrerasBase, db: Session = Depends(ge
 @app.get("/carreras/{id_carrera}", tags = ["carreras"], status_code=status.HTTP_202_ACCEPTED, 
 response_model=schemas.CarrerasResponseBase)
 async def read_carrera(id_carrera: int, db: Session = Depends(get_db)):
-    db_carreras = crud.query_row_carreras(db= db, id_carrera= id_carrera)
+    db_carreras = crud.query_row_carrera(db= db, id_carrera= id_carrera)
     if db_carreras is None:
         raise HTTPException(status_code=404, detail="Carrera no encontrada")
+    return db_carreras
+
+#CONSULTAR N REGISTROS
+@app.get("/carreras/", tags = ["carreras"], status_code=status.HTTP_202_ACCEPTED, 
+response_model= List[schemas.CarrerasResponseBase])
+async def read_carreras(db: Session = Depends(get_db)):
+    db_carreras = crud.query_row_carreras(db= db)
+    if db_carreras is None:
+        raise HTTPException(status_code=404, detail="Elementos no encontrados")
     return db_carreras
 
 #ACTUALIZAR

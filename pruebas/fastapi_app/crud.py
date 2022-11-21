@@ -84,14 +84,28 @@ def insert_row_carreras(db:Session, user_carrera:schemas.CarrerasBase):
             print(error)
             return False
         
-#Consultar
-def query_row_carreras(db: Session, id_carrera: int):
+#Consultar una carrera
+def query_row_carrera(db: Session, id_carrera: int):
     try:
         carrera = db.query(models.Carreras.id_carrera, models.Carreras.nombre_carrera, 
         models.Usuarios.id_usuario, models.Usuarios.nombre_usuario, models.Usuarios.apellido_paterno, 
         models.Usuarios.apellido_materno).join(models.Usuarios).filter(models.Carreras.id_carrera == id_carrera).first()
         if carrera:
                 return dict(carrera)
+        else:
+                return None
+    except Exception as error:
+        print(error)
+        return None
+
+#Consultar N carreras
+def query_row_carreras(db: Session):
+    try:
+        carreras = db.query(models.Carreras.id_carrera, models.Carreras.nombre_carrera, 
+        models.Usuarios.id_usuario, models.Usuarios.nombre_usuario, models.Usuarios.apellido_paterno, 
+        models.Usuarios.apellido_materno).join(models.Usuarios).order_by(models.Carreras.id_carrera.asc())
+        if carreras:
+                return [dict(i) for i in carreras]
         else:
                 return None
     except Exception as error:
