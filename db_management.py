@@ -4,9 +4,9 @@ from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
 
-engine = create_engine("postgresql://postgres:12345678@localhost:5432/pruebas_horarios")
+#engine = create_engine("postgresql://postgres:12345678@localhost:5432/pruebas_horarios")
 
-#engine = create_engine("postgresql://postgres:26Ti9228twc8!d3@db.svhulthwokfuuwlasvul.supabase.co:5432/postgres")
+engine = create_engine("postgresql://postgres:26Ti9228twc8!d3@db.svhulthwokfuuwlasvul.supabase.co:5432/postgres")
 
 '''class TipoUsuario(enum.Enum):
     administrador = 1

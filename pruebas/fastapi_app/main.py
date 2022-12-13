@@ -65,9 +65,9 @@ def get_db():
 
 
 ########################################## DIRECCIONAR ######################################################
-'''@app.get("/")
+@app.get("/")
 async def read_root():
-    return  RedirectResponse(url="/docs")'''
+    return  RedirectResponse(url="/docs")
 
 
 ############################################ USUARIOS #################################################
