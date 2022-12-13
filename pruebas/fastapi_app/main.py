@@ -5,13 +5,42 @@ from typing import List
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
+from starlette.responses import RedirectResponse
  
 from . import crud, models, schemas
 from .database import SessionLocal, engine
  
 models.Base.metadata.create_all(bind=engine)
- 
-app = FastAPI()
+
+description = """
+SchoolSchedule API capaz de admnistrar la gestión de horarios escolares. 🚀
+## Items
+    - Gestionar Usuarios
+    - Gestionar Carreras
+    - Ciclos Escolares
+    - Plan de estudio
+    - Grupos
+    - Registro de disponibilidad de docentes
+    - Gestión de horarios escolares (No implementado)
+
+"""
+
+
+app = FastAPI(
+title="SchoolSchedule",
+    description=description,
+    version="0.0.1",
+    terms_of_service="http://example.com/terms/",
+    contact={
+        "name": "SchoolSchedule",
+        "url": "https://github.com/DarkStark9608/SchoolSchedule/",
+        "email": "SchoolSchedule",
+    },
+    license_info={
+        "name": "Apache 2.0",
+        "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+    },
+)
 
 origins = [
     "*"
@@ -34,6 +63,13 @@ def get_db():
     finally:
         db.close()
 
+
+########################################## DIRECCIONAR ######################################################
+'''@app.get("/")
+async def read_root():
+    return  RedirectResponse(url="/docs")'''
+
+
 ############################################ USUARIOS #################################################
 
 #INSERTAR
@@ -52,6 +88,14 @@ async def read_user(email: str, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return db_user
+
+#Consultar N registros TIPO USUARIO
+@app.get("/usuarios/tipo/{tipo_usuario}", tags = ["usuarios"], status_code=status.HTTP_202_ACCEPTED)
+async def read_user_tipo_usuario(tipo_usuario: int, db: Session = Depends(get_db)):
+    db_users = crud.query_usuario_tipo(db=db, tipo_usuario=str(tipo_usuario))
+    if db_users is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return db_users
 
 #CONSULTAR N REGISTROS
 @app.get("/usuarios/", tags=["usuarios"], response_model= List[schemas.UserBase], 
@@ -250,3 +294,130 @@ async def delete_user(id_grupo: int, db: Session = Depends(get_db)):
         return {"message": "Grupo eliminado correctamente"}
     else:
         raise HTTPException(status_code=404, detail="No se eliminó correctamente")
+
+
+############################################### REGISTRO DOCENTE #######################################
+
+#INSERTAR
+@app.post("/docente/", tags = ["docente"], status_code=status.HTTP_202_ACCEPTED)
+async def create_docente(docente: schemas.RegistroDocenteBase, db: Session = Depends(get_db)):
+    if crud.insert_row_docente(db=db, docente_base= docente) is True:
+        return { "message" : "Docente agregado correctamente" }        
+    else:
+        raise HTTPException(status_code=400, detail="No se agregó correctamente")
+
+#CONSULTAR 1 REGISTRO
+@app.get("/docente/{email}", tags = ["docente"], status_code=status.HTTP_202_ACCEPTED,
+response_model=schemas.RegistroDocenteBase)
+async def read_docente(email: str, db: Session = Depends(get_db)):
+    db_docente = crud.query_row_docente(db=db, email=email)
+    if db_docente is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return db_docente
+
+#Actualizar
+@app.put("/docente/", tags = ["docente"], status_code=status.HTTP_202_ACCEPTED)
+async def update_docente(docente: schemas.RegistroDocenteBase, db: Session = Depends(get_db)):
+    if crud.update_row_docente(db=db, docente_base= docente) is True:
+        return { "message" : "Docente actualizado correctamente" }        
+    else:
+        raise HTTPException(status_code=400, detail="No se agregó correctamente")
+
+#BORRAR
+@app.delete("/docente/{email}", tags=["docente"], status_code=status.HTTP_202_ACCEPTED)
+async def delete_docente(email: str, db: Session = Depends(get_db)):
+    if crud.delete_docente(db=db, email=email) is True:
+        return {"message": "Docente eliminado correctamente"}
+    else:
+        raise HTTPException(status_code=404, detail="No se eliminó correctamente")
+
+################################################## DISPONIBILIDAD DOCENTES #################################################
+
+#INSERTAR
+@app.post("/disponibilidad/", tags = ["disponibilidad_docente"], status_code=status.HTTP_202_ACCEPTED)
+async def create_disponibilidad(disponibilidad: schemas.DisponibilidadDocentesBase, db: Session = Depends(get_db)):
+    if crud.insert_row_disponibilidad_docente(db=db, disponibilidad_base= disponibilidad) is True:
+        return { "message" : "Disponibilidad de docente agregado correctamente" }        
+    else:
+        raise HTTPException(status_code=400, detail="No se agregó correctamente")
+
+#CONSULTAR 1 REGISTRO
+@app.get("/disponibilidad/{id_disponibilidad_docente}", tags = ["disponibilidad_docente"], status_code=status.HTTP_202_ACCEPTED,
+response_model=schemas.DisponibilidadDocentesBase)
+async def read_disponibilidad(id_disponibilidad_docente: int, db: Session = Depends(get_db)):
+    db_docente = crud.query_row_disponibilidad_docente(db=db, id_disponibilidad_docente= id_disponibilidad_docente)
+    if db_docente is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return db_docente
+
+#CONSULTAR N REGISTROS
+@app.get("/disponibilidad/", tags=["disponibilidad_docente"], response_model= List[schemas.DisponibilidadDocentesBase], 
+status_code=status.HTTP_202_ACCEPTED)
+async def read_disponibilidad_docente(db: Session = Depends(get_db), id_ciclo_escolar : int = 0, id_docente : int = 0):
+    db_docente = crud.query_rows_disponibilidad_id_docente(db= db, id_ciclo_escolar= id_ciclo_escolar, id_docente= id_docente)
+    if db_docente is not None:
+        return db_docente
+    else:
+        raise HTTPException(status_code= 404, detail="Consulta no valida")
+
+#Actualizar
+@app.put("/disponibilidad/", tags = ["disponibilidad_docente"], status_code=status.HTTP_202_ACCEPTED)
+async def update_disponibilidad(disponibilidad: schemas.DisponibilidadDocentesBase, db: Session = Depends(get_db)):
+    if crud.update_row_disponibilidad_docente(db=db, disponibilidad_base= disponibilidad) is True:
+        return { "message" : "Disponibilidad de docente actualizada correctamente" }        
+    else:
+        raise HTTPException(status_code=400, detail="No se agregó correctamente")
+
+#Eliminar
+@app.delete("/disponibilidad/{id_disponibilidad_docente}", tags = ["disponibilidad_docente"], status_code=status.HTTP_202_ACCEPTED)
+async def read_disponibilidad(id_disponibilidad_docente: int, db: Session = Depends(get_db)):
+    if crud.delete_row_disponibilidad_docente(db=db, id_disponibilidad_docente= id_disponibilidad_docente) is True:
+        return { "message" : "Disponibilidad de docente eliminada correctamente" }  
+    else:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+################################################ CONTRATACIÓN DOCENTE ######################################################
+
+#INSERTAR
+@app.post("/contratacion/", tags = ["contratacion_docente"], status_code=status.HTTP_202_ACCEPTED)
+async def create_contratacion(contratacion: schemas.ContratacionDocenteBase, db: Session = Depends(get_db)):
+    if crud.insert_row_contratacion_docente(db=db, contratacion_base= contratacion) is True:
+        return { "message" : "Contratación de docente agregado correctamente" }        
+    else:
+        raise HTTPException(status_code=400, detail="No se agregó correctamente")
+
+#CONSULTAR 1 REGISTRO
+@app.get("/contratacion/{id_contratacion_docente}", tags = ["contratacion_docente"], status_code=status.HTTP_202_ACCEPTED,
+response_model=schemas.ContratacionDocenteBase)
+async def read_contratacion(id_contratacion_docente: int, db: Session = Depends(get_db)):
+    db_docente = crud.query_row_contratacion_docente(db=db, id_contratacion_docente= id_contratacion_docente)
+    if db_docente is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return db_docente
+
+#CONSULTAR N REGISTROS
+@app.get("/contratacion/", tags=["contratacion_docente"], response_model= List[schemas.ContratacionDocenteBase], 
+status_code=status.HTTP_202_ACCEPTED)
+async def read_contratacion_docente(db: Session = Depends(get_db), id_grupo : int = 0, id_ciclo_escolar : int = 0):
+    db_docente = crud.query_row_contratacion_docente_grupo_ciclo_escolar(db= db, id_grupo= id_grupo, id_ciclo_escolar= id_ciclo_escolar)
+    if db_docente is not None:
+        return db_docente
+    else:
+        raise HTTPException(status_code= 404, detail="Consulta no valida")
+
+
+#Actualizar
+@app.put("/contratacion/", tags = ["contratacion_docente"], status_code=status.HTTP_202_ACCEPTED)
+async def update_contratacion(contratacion: schemas.ContratacionDocenteBase, db: Session = Depends(get_db)):
+    if crud.update_row_contratacion_docente(db=db, contratacion_base= contratacion) is True:
+        return { "message" : "Contratación de docente actualizado correctamente" }        
+    else:
+        raise HTTPException(status_code=400, detail="No se actualizó correctamente")
+
+#Eliminar
+@app.delete("/contratacion/{id_contratacion_docente}", tags = ["contratacion_docente"], status_code=status.HTTP_202_ACCEPTED)
+async def delete_contratacion(id_contratacion_docente: int, db: Session = Depends(get_db)):
+    if crud.delete_row_contratacion_docente(db=db, id_contratacion_docente= id_contratacion_docente) is True:
+        return { "message" : "Contratación de docente eliminada correctamente" }  
+    else:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")

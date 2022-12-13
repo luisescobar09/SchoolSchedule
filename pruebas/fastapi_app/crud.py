@@ -40,6 +40,16 @@ def query_rows_usuarios(db: Session, limit, offset):
     else:
         return None
 
+#Consultar tipo usuario
+def query_usuario_tipo(db: Session, tipo_usuario: str):
+    users = db.query(models.Usuarios.id_usuario, models.Usuarios.nombre_usuario,
+    models.Usuarios.apellido_paterno, models.Usuarios.apellido_materno
+    ).filter(models.Usuarios.tipo_usuario == tipo_usuario).order_by(models.Usuarios.id_usuario.asc()).all()
+    if users:
+        return [dict(i) for i in users]
+    else:
+        return None
+
 #Actualizar
 def update_row_Usuarios(db: Session, user_base: schemas.UserBase):
     try:
@@ -364,6 +374,290 @@ def delete_row_grupos(db: Session, id_grupo: int):
                 models.Grupo.id_grupo == id_grupo
         ).delete()
         db.commit()
+        return True
+    except Exception as error:
+        print(error)
+        return False
+
+############################################### REGISTRO DOCENTE #######################################
+
+#INSERTAR
+def insert_row_docente(db: Session, docente_base: schemas.RegistroDocenteBase):
+    try:
+        docente = models.RegistroDocente(nombre=docente_base.nombre, apellido_paterno=docente_base.apellido_paterno, 
+        apellido_materno= docente_base.apellido_materno, email= docente_base.email, 
+        tipo_docente= docente_base.tipo_docente, carrera= docente_base.carrera)
+        db.add(docente)
+        db.commit()
+        db.refresh(docente)
+        return True
+    except Exception as error:
+        print(error)
+        return False
+
+#Consultar 1 registro
+def query_row_docente(db: Session, email: str):
+    try:
+        docente = db.query(models.RegistroDocente.id_docente, models.RegistroDocente.nombre_usuario, models.RegistroDocente.apellido_paterno, 
+        models.RegistroDocente.apellido_materno, models.RegistroDocente.email, models.RegistroDocente.tipo_docente, models.RegistroDocente.carrera).filter(
+            models.RegistroDocente.email == email
+        ).first()
+        if docente:
+                return dict(docente)
+        else:
+                return None
+    except Exception as error:
+        print(error)
+        return None
+
+#Consultar N registros
+def query_rows_docente(db: Session, limit, offset):
+    docentes = db.query(
+        models.RegistroDocente.id_docente, models.RegistroDocente.nombre_usuario, models.RegistroDocente.apellido_paterno, 
+        models.RegistroDocente.apellido_materno, models.RegistroDocente.email, models.RegistroDocente.tipo_docente, models.RegistroDocente.carrera
+    ).order_by(models.RegistroDocente.id_docente.asc()).limit(limit).offset(offset)
+    if docentes:
+        return [dict(i) for i in docentes]
+    else:
+        return None
+
+#Consultar registro por carrera
+def query_usuario_docente(db: Session, carrera: int):
+    docentes = db.query(
+        models.RegistroDocente.id_docente, models.RegistroDocente.nombre_usuario, models.RegistroDocente.apellido_paterno, 
+        models.RegistroDocente.apellido_materno, models.RegistroDocente.email, models.RegistroDocente.tipo_docente, models.RegistroDocente.carrera
+    ).filter(models.RegistroDocente.carrera == carrera).order_by(models.RegistroDocente.id_docente.asc()).all()
+    if docentes:
+        return [dict(i) for i in docentes]
+    else:
+        return None
+
+#Actualizar
+def update_row_docente(db: Session, docente_base: schemas.RegistroDocenteBase):
+    try:
+        db.query(models.RegistroDocente).filter(
+                models.RegistroDocente.id_docente == docente_base.id_registro_docente 
+        ).update(
+                {
+                    models.RegistroDocente.nombre : docente_base.nombre_usuario,
+                    models.RegistroDocente.apellido_paterno : docente_base.apellido_paterno,
+                    models.RegistroDocente.apellido_materno : docente_base.apellido_materno,
+                    models.RegistroDocente.email : docente_base.email,
+                    models.RegistroDocente.tipo_docente : docente_base.tipo_docente,
+                    models.RegistroDocente.carrera : docente_base.carrera
+                }
+        )
+        db.commit()
+        return True
+    except Exception as error:
+        print(error)
+        return False
+
+#Eliminar
+def delete_row_docente(db: Session, email: str):
+    try:
+        db.query(models.RegistroDocente).filter(
+                models.RegistroDocente.email == email
+        ).delete()
+        db.commit()
+        return True
+    except Exception as error:
+        print(error)
+        return False
+
+################################################## DISPONIBILIDAD DOCENTES #################################################
+
+#INSERTAR
+def insert_row_disponibilidad_docente(db: Session, disponibilidad_base: schemas.DisponibilidadDocentesBase):
+    try:
+        disponibilidad = models.DisponibilidadDocentes(
+            id_ciclo_escolar = disponibilidad_base.id_ciclo_escolar,
+            id_docente = disponibilidad_base.id_docente,
+            lunes_entrada = disponibilidad_base.lunes_entrada,
+            lunes_salida = disponibilidad_base.lunes_salida,
+            martes_entrada = disponibilidad_base.martes_entrada,
+            martes_salida = disponibilidad_base.martes_salida,
+            miercoles_entrada = disponibilidad_base.miercoles_entrada,
+            miercoles_salida = disponibilidad_base.miercoles_salida,
+            jueves_entrada = disponibilidad_base.jueves_entrada,
+            jueves_salida = disponibilidad_base.jueves_salida,
+            viernes_entrada = disponibilidad_base.viernes_entrada,
+            viernes_salida = disponibilidad_base.viernes_salida,
+            sabado_entrada = disponibilidad_base.sabado_entrada,
+            sabado_salida = disponibilidad_base.sabado_salida
+        )
+        db.add(disponibilidad)
+        db.commit()
+        db.refresh(disponibilidad)
+        return True
+    except Exception as error:
+        print(error)
+        return False
+
+#Consultar 1 registro
+def query_row_disponibilidad_docente(db: Session, id_disponibilidad_docente: int):
+    try:
+        disponibilidad_docente = db.query(models.DisponibilidadDocentes.id_disponibilidad, models.DisponibilidadDocentes.id_ciclo_escolar, models.DisponibilidadDocentes.id_docente, 
+        models.DisponibilidadDocentes.lunes_entrada, models.DisponibilidadDocentes.lunes_salida, models.DisponibilidadDocentes.martes_entrada, models.DisponibilidadDocentes.martes_salida,
+        models.DisponibilidadDocentes.miercoles_entrada, models.DisponibilidadDocentes.miercoles_salida, models.DisponibilidadDocentes.jueves_entrada, models.DisponibilidadDocentes.jueves_salida,
+        models.DisponibilidadDocentes.viernes_entrada, models.DisponibilidadDocentes.viernes_salida, models.DisponibilidadDocentes.sabado_entrada, models.DisponibilidadDocentes.sabado_salida).filter(
+            models.DisponibilidadDocentes.id_disponibilidad == id_disponibilidad_docente
+        ).first()
+        if disponibilidad_docente:
+                return dict(disponibilidad_docente)
+        else:
+                return None
+    except Exception as error:
+        print(error)
+        return None
+
+#Consultar N registros
+def query_rows_disponibilidad_id_docente(db: Session, id_ciclo_escolar: int, id_docente: int):
+    disponibilidad_docente = db.query(models.DisponibilidadDocentes.id_disponibilidad, models.DisponibilidadDocentes.id_ciclo_escolar, models.DisponibilidadDocentes.id_docente, 
+        models.DisponibilidadDocentes.lunes_entrada, models.DisponibilidadDocentes.lunes_salida, models.DisponibilidadDocentes.martes_entrada, models.DisponibilidadDocentes.martes_salida,
+        models.DisponibilidadDocentes.miercoles_entrada, models.DisponibilidadDocentes.miercoles_salida, models.DisponibilidadDocentes.jueves_entrada, models.DisponibilidadDocentes.jueves_salida,
+        models.DisponibilidadDocentes.viernes_entrada, models.DisponibilidadDocentes.viernes_salida, models.DisponibilidadDocentes.sabado_entrada, models.DisponibilidadDocentes.sabado_salida).filter(
+            models.DisponibilidadDocentes.id_ciclo_escolar == id_ciclo_escolar and models.DisponibilidadDocentes.id_docente == id_docente).first()
+    if disponibilidad_docente:
+        return dict(disponibilidad_docente)
+    else:
+        return None
+
+#Actualizar
+def update_row_disponibilidad_docente(db: Session, disponibilidad_base: schemas.DisponibilidadDocentesBase):
+    try:
+        db.query(models.DisponibilidadDocentes).filter(
+                models.DisponibilidadDocentes.id_disponibilidad == disponibilidad_base.id_disponibilidad 
+        ).update(
+                {
+                    models.DisponibilidadDocentes.id_ciclo_escolar : disponibilidad_base.id_ciclo_escolar,
+                    models.DisponibilidadDocentes.id_docente : disponibilidad_base.id_docente,
+                    models.DisponibilidadDocentes.lunes_entrada : disponibilidad_base.lunes_entrada,
+                    models.DisponibilidadDocentes.lunes_salida : disponibilidad_base.lunes_salida,
+                    models.DisponibilidadDocentes.martes_entrada : disponibilidad_base.martes_entrada,
+                    models.DisponibilidadDocentes.martes_salida : disponibilidad_base.martes_salida,
+                    models.DisponibilidadDocentes.miercoles_entrada : disponibilidad_base.miercoles_entrada,
+                    models.DisponibilidadDocentes.miercoles_salida : disponibilidad_base.miercoles_salida,
+                    models.DisponibilidadDocentes.jueves_entrada : disponibilidad_base.jueves_entrada,
+                    models.DisponibilidadDocentes.jueves_salida : disponibilidad_base.jueves_salida,
+                    models.DisponibilidadDocentes.viernes_entrada : disponibilidad_base.viernes_entrada,
+                    models.DisponibilidadDocentes.viernes_salida : disponibilidad_base.viernes_salida,
+                    models.DisponibilidadDocentes.sabado_entrada : disponibilidad_base.sabado_entrada,
+                    models.DisponibilidadDocentes.sabado_salida : disponibilidad_base.sabado_salida   
+                }
+        )
+        db.commit()
+        return True
+    except Exception as error:
+        print(error)
+        return False
+
+#Eliminar
+def delete_row_disponibilidad_docente(db: Session, id_disponibilidad_docente: int):
+    try:
+        db.query(models.DisponibilidadDocentes).filter(
+                models.DisponibilidadDocentes.id_disponibilidad == id_disponibilidad_docente
+        ).delete()
+        db.commit()
+        return True
+    except Exception as error:
+        print(error)
+        return False
+
+################################################ CONTRATACIÓN DOCENTE ######################################################
+
+#INSERTAR
+def insert_row_contratacion_docente(db: Session, contratacion_base: schemas.ContratacionDocenteBase):
+    try:
+        contratacion = models.ContratacionDocente(
+            id_ciclo_escolar = contratacion_base.id_ciclo_escolar,
+            id_docente = contratacion_base.id_docente,
+            id_grupo = contratacion_base.id_grupo,
+            id_materia = contratacion_base.id_materia
+            )
+        db.add(contratacion)
+        db.commit()
+        db.refresh(contratacion)
+        return True
+    except Exception as error:
+        print(error)
+        return False
+
+#Consultar 1 registro
+def query_row_contratacion_docente(db: Session, id_contratacion_docente: int):
+    try:
+        contratacion_docente = db.query(models.ContratacionDocente.id_contratacion, models.ContratacionDocente.id_ciclo_escolar, models.ContratacionDocente.id_docente, 
+        models.ContratacionDocente.id_grupo, models.ContratacionDocente.id_materia).filter(
+            models.ContratacionDocente.id_contratacion == id_contratacion_docente
+        ).first()
+        if contratacion_docente:
+                return dict(contratacion_docente)
+        else:
+                return None
+    except Exception as error:
+        print(error)
+        return None
+
+#Consultar 1 registro
+def query_row_contratacion_docente_grupo_ciclo_escolar(db: Session, id_grupo: int, id_ciclo_escolar):
+    try:
+        contratacion_docente = db.query(models.ContratacionDocente.id_contratacion, models.ContratacionDocente.id_ciclo_escolar, models.ContratacionDocente.id_docente, 
+        models.ContratacionDocente.id_grupo, models.ContratacionDocente.id_materia).filter(
+            models.ContratacionDocente.id_grupo == id_grupo and models.ContratacionDocente.id_ciclo_escolar == id_ciclo_escolar
+        ).first()
+        if contratacion_docente:
+                return dict(contratacion_docente)
+        else:
+                return None
+    except Exception as error:
+        print(error)
+        return None
+
+#Actualizar
+def update_row_contratacion_docente(db: Session, contratacion_base: schemas.ContratacionDocenteBase):
+    try:
+        db.query(models.ContratacionDocente).filter(
+                models.ContratacionDocente.id_contratacion == contratacion_base.id_contratacion 
+        ).update(
+                {
+                    models.ContratacionDocente.id_ciclo_escolar : contratacion_base.id_ciclo_escolar,
+                    models.ContratacionDocente.id_docente : contratacion_base.id_docente,
+                    models.ContratacionDocente.id_grupo : contratacion_base.id_grupo,
+                    models.ContratacionDocente.id_materia : contratacion_base.id_materia,
+                }
+        )
+        db.commit()
+        return True
+    except Exception as error:
+        print(error)
+        return False
+
+#Eliminar
+def delete_row_contratacion_docente(db: Session, id_contratacion_docente: int):
+    try:
+        db.query(models.ContratacionDocente).filter(
+                models.ContratacionDocente.id_contratacion == id_contratacion_docente
+        ).delete()
+        db.commit()
+        return True
+    except Exception as error:
+        print(error)
+        return False
+
+################################################ HORARIOS ######################################################
+
+#INSERTAR
+def insert_row_horario(db: Session, contratacion_base: schemas.ContratacionDocenteBase):
+    try:
+        contratacion = models.ContratacionDocente(
+            id_ciclo_escolar = contratacion_base.id_ciclo_escolar,
+            id_docente = contratacion_base.id_docente,
+            id_grupo = contratacion_base.id_grupo,
+            id_materia = contratacion_base.id_materia
+            )
+        db.add(contratacion)
+        db.commit()
+        db.refresh(contratacion)
         return True
     except Exception as error:
         print(error)

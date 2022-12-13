@@ -70,10 +70,62 @@ class Grupo(Base):
     carrera = Column(SmallInteger(), ForeignKey("carreras.id_carrera", ondelete="CASCADE"), nullable = False) ### FOREIGN KEY CARRERAS(ID)
 
 
-'''class DisponibilidadDocentes(Base):
-    __tablename__ = 'disponibilidad_docentes'
-    id'''
-    
+#################################################### DOCENTES  ########################################
+
+class RegistroDocente(Base):
+    __tablename__ ='docentes'
+    id_docente = Column(Integer(), primary_key = True)
+    nombre = Column(String(20), nullable = False)
+    apellido_paterno = Column(String(15), nullable = False)
+    apellido_materno = Column(String(15), nullable = False)
+    email = Column(String(60), nullable = False, unique = True)
+    tipo_docente = Column(String(1), nullable = False)
+    carrera = Column(SmallInteger(), ForeignKey("carreras.id_carrera", ondelete="CASCADE"), nullable = False) ### FOREIGN KEY CARRERAS(ID)
+
+#################################################### DISPONIBILIDAD DOCENTES ######################################################
+
+class DisponibilidadDocentes(Base):
+    __tablename__='disponibilidad_docentes'
+    id_disponibilidad = Column(Integer(), primary_key = True, nullable = False)
+    id_ciclo_escolar = Column(Integer(), ForeignKey("ciclo_escolar.id_ciclo_escolar", ondelete="CASCADE"), nullable = False)
+    id_docente = Column(Integer(), ForeignKey("docentes.id_docente", ondelete="CASCADE"), nullable = False)
+    lunes_entrada = Column(Time(), nullable = True)
+    lunes_salida = Column(Time(), nullable = True)
+    martes_entrada = Column(Time(), nullable = True)
+    martes_salida = Column(Time(), nullable = True)
+    miercoles_entrada = Column(Time(), nullable = True)
+    miercoles_salida = Column(Time(), nullable = True)
+    jueves_entrada = Column(Time(), nullable = True)
+    jueves_salida = Column(Time(), nullable = True)
+    viernes_entrada = Column(Time(), nullable = True)
+    viernes_salida = Column(Time(), nullable = True)
+    sabado_entrada = Column(Time(), nullable = True)
+    sabado_salida = Column(Time(), nullable = True)
+
+################################################ CONTRATACIÓN DOCENTE ######################################################
+
+class ContratacionDocente(Base):
+    __tablename__ = 'contratacion_docente'
+    id_contratacion = Column(Integer(), primary_key=True, nullable=False)
+    id_ciclo_escolar = Column(Integer(), ForeignKey("ciclo_escolar.id_ciclo_escolar", ondelete="CASCADE"), nullable = False)
+    id_docente = Column(Integer(), ForeignKey("docentes.id_docente", ondelete="CASCADE"), nullable = False)
+    id_grupo = Column(Integer(), ForeignKey("grupos.id_grupo", ondelete="CASCADE"), nullable=False)
+    id_materia = Column(Integer(), ForeignKey("plan_estudios.id_materia", ondelete="CASCADE"), nullable=False)
+
+################################################ HORARIOS ######################################################
+
+class Horarios(Base):
+    __tablename__ = 'horarios'
+    id_horario = Column(Integer(), primary_key=True, nullable=False)
+    id_ciclo_escolar = Column(Integer(), ForeignKey("ciclo_escolar.id_ciclo_escolar", ondelete="CASCADE"), nullable = False)
+    id_docente = Column(Integer(), ForeignKey("docentes.id_docente", ondelete="CASCADE"), nullable = False)
+    id_grupo = Column(Integer(), ForeignKey("grupos.id_grupo", ondelete="CASCADE"), nullable=False)
+    id_materia = Column(Integer(), ForeignKey("plan_estudios.id_materia", ondelete="CASCADE"), nullable=False)
+    dia_clases = Column(SmallInteger(), nullable = False)
+    hora_entrada = Column(Time(), nullable = True)
+    hora_salida = Column(Time(), nullable = True)
+
+
 Session = sessionmaker(engine)
 session = Session()
 
@@ -292,7 +344,7 @@ def delete_row_ciclo_escolar(id_ciclo_escolar: int):
 
 
 if __name__=='__main__':
-    '''Base.metadata.drop_all(engine)
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     print("Insertar Usuario:",insert_row_Usuarios(nombre_usuario="José Luis", apellido_paterno="Escobar", apellido_materno="Pérez", email="1719110043@utectulancingo.edu.mx", tipo_usuario="1"))
     print(query_row_Usuarios(email="1719110043@utectulancingo.edu.mx"))
@@ -319,7 +371,7 @@ if __name__=='__main__':
     print("Insertar grupo:", insert_row_grupos(
         cuatrimestre= 9, no_grupo=1, hora_entrada_minima='14:00', hora_salida_maxima='21:00',
         ciclo_escolar= 1, carrera= 1
-    ))'''
+    ))
     print(query_rows_grupos(ciclo_escolar=1, carrera=1))
 
     '''if delete_row_Usuarios(email="1719110043@utectulancingo.edu.mx") is True:
