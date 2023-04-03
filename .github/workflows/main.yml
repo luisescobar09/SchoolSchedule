@@ -6,7 +6,8 @@ name: fastapi-github-actions-test
 on: 
   # Activar el flujo de trabajo en un evento de inserción solo en la rama master
   push: 
-    branches: [master]
+    branches: 
+    - master
 
 # Un trabajo de flujo de trabajo que se ejecuta secuencialmente
 jobs:
