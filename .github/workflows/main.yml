@@ -36,4 +36,4 @@ jobs:
     # Tarea de pruebas con pytest
     - name: Run pytest
       run: |
-        pytest
+        pytest pruebas/test/main.py
