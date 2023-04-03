@@ -1,0 +1,38 @@
+#main.yml
+# Este workflow instalará las dependencias de Python, usará Black y ejecutará pruebas con Pytest
+# e implementará la aplicación FastAPI en Heroku
+name: fastapi-github-actions-test
+
+on: 
+  # Activar el flujo de trabajo en un evento de inserción solo en la rama master
+  push: 
+    branches: [master]
+
+# Un trabajo de flujo de trabajo que se ejecuta secuencialmente
+jobs:
+  build:
+    #runs-on: define el corredor de flujo de trabajo
+    runs-on: ubuntu-latest 
+    #steps: defines a serie de tareas a ejecutar
+    steps:
+    - uses: actions/checkout@v2
+    - run: |   # obtiene todo el historial de todas las etiquetas y ramas
+        git fetch --prune --unshallow  
+
+    # Tarea para configurar Python 3.8 usando actions/setup-python@v2 Github action
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8 # Versión de Python elegida
+
+    # Tarea para instalar las dependencias requeridas, contiene una condicional en caso de que exista un archivo de requeriemientos en txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install black pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    
+    # Tarea de pruebas con pytest
+    - name: Run pytest
+      run: |
+        pytest
