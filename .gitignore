@@ -4,3 +4,4 @@ env/
 .env
 .pytest_cache
 pytest_cache
+*.cfg
