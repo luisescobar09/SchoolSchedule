@@ -37,3 +37,10 @@ jobs:
     - name: Run pytest
       run: |
         pytest pruebas/test/main.py
+
+    # Tarea para formateo y calidad de código utilizando Black
+    - name: Lint with black
+      run: |
+        # Code formatting with black, check every python file in the src directory 
+        black pruebas 
+        black --check pruebas
