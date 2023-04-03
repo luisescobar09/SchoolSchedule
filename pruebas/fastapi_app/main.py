@@ -18,10 +18,10 @@ SchoolSchedule API capaz de admnistrar la gestión de horarios escolares. 🚀
     - Gestionar Usuarios
     - Gestionar Carreras
     - Ciclos Escolares
-    - Plan de estudio
+    - Plan de estudios
     - Grupos
     - Registro de disponibilidad de docentes
-    - Gestión de horarios escolares (No implementado)
+    - Gestión de horarios escolares (nuevo)
 
 """
 
