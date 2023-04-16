@@ -1,5 +1,8 @@
 """coding=utf-8."""
  
+import newrelic.agent
+newrelic.agent.initialize('newrelic.ini')
+
 from typing import List
  
 from fastapi import Depends, FastAPI, HTTPException, status
