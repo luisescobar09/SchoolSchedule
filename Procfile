@@ -1,1 +1,1 @@
-web: uvicorn pruebas.fastapi_app.main:app --host=0.0.0.0 --port=${PORT:-5000}
+web: NEW_RELIC_CONFIG_FILE=newrelic.ini newrelic-admin run-program uvicorn pruebas.fastapi_app.main:app --host=0.0.0.0 --port=${PORT:-5000}

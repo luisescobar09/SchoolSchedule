@@ -1,7 +1,7 @@
 """coding=utf-8."""
  
-import newrelic.agent
-newrelic.agent.initialize('pruebas/fastapi_app/newrelic.ini')
+#import newrelic.agent
+#newrelic.agent.initialize('pruebas/fastapi_app/newrelic.ini')
 
 from typing import List
  
